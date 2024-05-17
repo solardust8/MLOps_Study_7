@@ -49,12 +49,13 @@ class KMeans:
             distanceMeasure='squaredEuclidean'
         )
 
-        for k in range(2, 10):
-            kmeans = KMeans(featuresCol='stdized_features', k=k)
-            model = kmeans.fit(self.stdized_data)
-            predictions = model.transform(self.stdized_data)
-            score = evaluator.evaluate(predictions)
-            self.log.info(f'k = {k}, silhouette score = {score}')
+        
+        k=5
+        kmeans = KMeans(featuresCol='stdized_features', k=k)
+        model = kmeans.fit(self.stdized_data)
+        predictions = model.transform(self.stdized_data)
+        score = evaluator.evaluate(predictions)
+        self.log.info(f'k = {k}, silhouette score = {score}')
 
         self.log.info("Clustering finished")
 
@@ -68,8 +69,8 @@ if __name__ == '__main__':
     spark = SparkSession.builder \
             .appName(config['spark']['app_name']) \
             .master(config['spark']['deploy_mode']) \
-            .config("spark.driver.host", "127.0.0.1")\
-            .config("spark.driver.bindAddress", "127.0.0.1") \
+            .config("spark.driver.host", config['spark']['host'])\
+            .config("spark.driver.bindAddress", config['spark']['bindAddress']) \
             .config("spark.driver.cores", config['spark']['driver_cores']) \
             .config("spark.executor.cores", config['spark']['executor_cores']) \
             .config("spark.driver.memory", config['spark']['driver_memory']) \
