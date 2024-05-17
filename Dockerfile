@@ -7,6 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH="${PYTHONPATH}:/app"
 
+
 RUN ln -sf $(which python3) /usr/bin/python && \
     ln -sf $(which pip3) /usr/bin/pip
 

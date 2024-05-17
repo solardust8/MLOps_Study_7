@@ -11,7 +11,7 @@ import traceback
 SHOW_LOG = True
 
 
-class KMeansClustering:
+class KMeans:
     def __init__(self,
                  path_to_data = None,
                  external_spark = None,
@@ -40,7 +40,7 @@ class KMeansClustering:
         self.log.info("Preprocessing finished")
 
 
-    def clustering(self):
+    def cluster(self):
         self.log.info("Clustering started")
         evaluator = ClusteringEvaluator(
             predictionCol='prediction',
@@ -76,7 +76,7 @@ if __name__ == '__main__':
             .config("spark.executor.memory", config['spark']['executor_memory']) \
             .getOrCreate()
 
-    kmeans = KMeansClustering(path_to_data=path_to_data, external_spark=spark)
-    kmeans.clustering()
+    kmeans = KMeans(path_to_data=path_to_data, external_spark=spark)
+    kmeans.cluster()
 
     kmeans.spark.stop()
