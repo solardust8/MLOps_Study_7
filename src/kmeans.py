@@ -13,44 +13,21 @@ SHOW_LOG = True
 
 class KMeansClustering:
     def __init__(self,
-                 config_path = 'config.ini',
                  path_to_data = None,
                  external_spark = None,
                  ):
 
+        assert (external_spark != None and path_to_data != None)
+
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
 
-        config = configparser.ConfigParser()
-        config.read(config_path)
-
-        if not external_spark == None:
-            try:
-                self.spark = SparkSession.builder \
-                .appName(config['spark']['app_name']) \
-                .master(config['spark']['deploy_mode']) \
-                .config("spark.driver.host", "127.0.0.1")\
-                .config("spark.driver.bindAddress", "127.0.0.1") \
-                .config("spark.driver.cores", config['spark']['driver_cores']) \
-                .config("spark.executor.cores", config['spark']['executor_cores']) \
-                .config("spark.driver.memory", config['spark']['driver_memory']) \
-                .config("spark.executor.memory", config['spark']['executor_memory']) \
-                .getOrCreate()
-            except Exception:
-                self.log.error(traceback.format_exc())
-                sys.exit(1)
-            self.log.info("Created a SparkSession")
-        else:
-            self.spark = external_spark
-
-        print(self.spark)
+        
+        self.spark = external_spark
         
         self.log.info("Assigned a SparkSession")
 
-        if not (path_to_data == None or path_to_data == 'config'):
-            self.path_to_data = path_to_data
-        else:
-            self.path_to_data = os.path.join(os.getcwd(), config['data']['data_path'])
+        self.path_to_data = path_to_data
 
         self.preprocessor = Preprocess()
 
@@ -73,7 +50,7 @@ class KMeansClustering:
         )
 
         for k in range(2, 10):
-            kmeans = KMeans(featuresCol='scaled_features', k=k)
+            kmeans = KMeans(featuresCol='stdized_features', k=k)
             model = kmeans.fit(self.stdized_data)
             predictions = model.transform(self.stdized_data)
             score = evaluator.evaluate(predictions)
@@ -84,8 +61,22 @@ class KMeansClustering:
 
 if __name__ == '__main__':
 
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    path_to_data = os.path.join(os.getcwd(), config['data']['data_path'])
 
-    kmeans = KMeansClustering()
+    spark = SparkSession.builder \
+            .appName(config['spark']['app_name']) \
+            .master(config['spark']['deploy_mode']) \
+            .config("spark.driver.host", "127.0.0.1")\
+            .config("spark.driver.bindAddress", "127.0.0.1") \
+            .config("spark.driver.cores", config['spark']['driver_cores']) \
+            .config("spark.executor.cores", config['spark']['executor_cores']) \
+            .config("spark.driver.memory", config['spark']['driver_memory']) \
+            .config("spark.executor.memory", config['spark']['executor_memory']) \
+            .getOrCreate()
+
+    kmeans = KMeansClustering(path_to_data=path_to_data, external_spark=spark)
     kmeans.clustering()
 
     kmeans.spark.stop()
