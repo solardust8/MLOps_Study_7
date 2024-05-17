@@ -1,6 +1,4 @@
-path
 configparser
 pyspark
 psutil
 numpy
-loguru
