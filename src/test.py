@@ -19,4 +19,4 @@ spark = SparkSession.builder \
         .getOrCreate()
 
 
-print(spark)
+spark.sparkContext.getConf().getAll()

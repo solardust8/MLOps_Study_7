@@ -18,3 +18,8 @@ RUN pip install --upgrade pip setuptools
 COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN mkdir -p /tmp/spark-events
+RUN mkdir -p /tmp/spark-history-server-logs
+
+EXPOSE 4040
+EXPOSE 18080

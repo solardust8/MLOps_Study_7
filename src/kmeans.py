@@ -6,12 +6,13 @@ from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.sql import SparkSession
 from preprocess import Preprocess
 from logger import Logger
-import traceback
+
+import time
 
 SHOW_LOG = True
 
 
-class KMeans:
+class KMeans_alg:
     def __init__(self,
                  path_to_data = None,
                  external_spark = None,
@@ -75,9 +76,14 @@ if __name__ == '__main__':
             .config("spark.executor.cores", config['spark']['executor_cores']) \
             .config("spark.driver.memory", config['spark']['driver_memory']) \
             .config("spark.executor.memory", config['spark']['executor_memory']) \
+            .config('spark.eventLog.enabled','true') \
             .getOrCreate()
 
-    kmeans = KMeans(path_to_data=path_to_data, external_spark=spark)
+    kmeans = KMeans_alg(path_to_data=path_to_data, external_spark=spark)
     kmeans.cluster()
 
+    input("Press Enter to continue...")
+
+    kmeans.spark.sparkContext.stop()
     kmeans.spark.stop()
+    

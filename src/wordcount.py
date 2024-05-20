@@ -6,6 +6,7 @@ import os
 spark = SparkSession.builder \
     .master("local") \
     .appName("WordCount") \
+    .config('spark.eventLog.enabled','true') \
     .getOrCreate()
 
 sc = spark.sparkContext
