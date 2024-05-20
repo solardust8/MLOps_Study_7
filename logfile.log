@@ -1,5 +1,5 @@
-2024-05-20 17:16:28,740 — preprocess — INFO — Dataset READY
-2024-05-20 17:16:29,927 — preprocess — INFO — Data standardized with mean r2024-05-20 17:16:30,618 — __main__ — INFO — Preprocessing finished
-2024-05-20 17:16:30,618 — __main__ — INFO — Clustering started
-2024-05-20 17:16:34,194 — __main__ — INFO — k = 5, silhouette score = 0.4407834464216306
-2024-05-20 17:16:34,195 — __main__ — INFO — Clustering finished
+2024-05-20 20:55:51,108 — preprocess — INFO — Dataset READY
+2024-05-20 20:55:53,374 — preprocess — INFO — Data standardized with mean r2024-05-20 20:55:53,767 — __main__ — INFO — Preprocessing finished
+2024-05-20 20:55:53,768 — __main__ — INFO — Clustering started
+2024-05-20 20:55:56,700 — __main__ — INFO — k = 5, silhouette score = 0.529255400952903
+2024-05-20 20:55:56,701 — __main__ — INFO — Clustering finished

@@ -1,6 +1,6 @@
 from pyspark.ml.feature import VectorAssembler, StandardScaler
 from logger import Logger
-
+from database import Database
 
 SHOW_LOG = True
 
@@ -10,25 +10,20 @@ class Preprocess:
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
 
-    def load_dataset(self, path_to_data, spark):
+    def load_dataset(self, database):
 
-        dataset = spark.read.csv(
-            path_to_data,
-            header=True,
-            inferSchema=True,
-            sep='\t',
-        )
+        dataset = database.read_table("OpenFoodFacts")
 
-        dataset.fillna(value=0)
+        #dataset.fillna(value=0)
 
         output_col = 'features'
         vector_assembler = VectorAssembler(
             inputCols=[
                 'completeness',
-                'energy-kcal_100g',
+                'energy_kcal_100g',
                 'energy_100g',
                 'fat_100g',
-                'saturated-fat_100g',
+                'saturated_fat_100g',
                 'carbohydrates_100g',
                 'sugars_100g',
                 'proteins_100g',

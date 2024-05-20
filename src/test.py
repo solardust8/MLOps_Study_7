@@ -1,3 +1,4 @@
+"""
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.sql import SparkSession
@@ -20,3 +21,22 @@ spark = SparkSession.builder \
 
 
 spark.sparkContext.getConf().getAll()
+"""
+
+cols = [
+        'completeness',
+        'energy-kcal_100g',
+        'energy_100g',
+        'fat_100g',
+        'saturated-fat_100g',
+        'carbohydrates_100g',
+        'sugars_100g',
+        'proteins_100g',
+        'salt_100g',
+        'sodium_100g'
+]
+
+import pandas as pd
+
+df = pd.read_csv('data/openfoodfacts.csv', sep='\t')
+df[cols].fillna(0).to_csv('data/openfoodfacts_filtered.csv')

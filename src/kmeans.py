@@ -7,6 +7,8 @@ from pyspark.sql import SparkSession
 from preprocess import Preprocess
 from logger import Logger
 
+from database import Database
+
 import time
 
 SHOW_LOG = True
@@ -14,11 +16,11 @@ SHOW_LOG = True
 
 class KMeans_alg:
     def __init__(self,
-                 path_to_data = None,
                  external_spark = None,
+                 database = None
                  ):
 
-        assert (external_spark != None and path_to_data != None)
+        assert (external_spark != None and database != None)
 
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
@@ -28,13 +30,13 @@ class KMeans_alg:
         
         self.log.info("Assigned a SparkSession")
 
-        self.path_to_data = path_to_data
+        self.database = database
 
         self.preprocessor = Preprocess()
 
         self.log.info("Preprocessing started")
 
-        assembled_data = self.preprocessor.load_dataset(self.path_to_data, self.spark)
+        assembled_data = self.preprocessor.load_dataset(self.database)
         self.stdized_data = self.preprocessor.std_assembled_dataset(assembled_data)
         self.stdized_data.collect()
     
@@ -76,10 +78,13 @@ if __name__ == '__main__':
             .config("spark.executor.cores", config['spark']['executor_cores']) \
             .config("spark.driver.memory", config['spark']['driver_memory']) \
             .config("spark.executor.memory", config['spark']['executor_memory']) \
+            .config("spark.jars", config['spark']['postgresql_driver']) \
             .config('spark.eventLog.enabled','true') \
             .getOrCreate()
+    
+    database = Database(spark=spark)
 
-    kmeans = KMeans_alg(path_to_data=path_to_data, external_spark=spark)
+    kmeans = KMeans_alg(database=database, external_spark=spark)
     kmeans.cluster()
 
     input("Press Enter to continue...")

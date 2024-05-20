@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "mlops"
+      POSTGRES_USER: "solar"
+      POSTGRES_PASSWORD: "somepass"
+    volumes:
+      - ./data/openfoodfacts_filtered.csv:/var/lib/postgresql/csvs/openfoodfacts_filtered.csv
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
