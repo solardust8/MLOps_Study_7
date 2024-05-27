@@ -4,10 +4,11 @@ import sys
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.sql import SparkSession
-from preprocess import Preprocess
+#from preprocess import Preprocess
 from logger import Logger
 
-from database import Database
+#from database import Database
+from datamart import Datamart
 
 import time
 
@@ -16,12 +17,15 @@ SHOW_LOG = True
 
 class KMeans_alg:
     def __init__(self,
-                 external_spark = None,
-                 database = None
+                 datamart = None
                  ):
 
-        assert (external_spark != None and database != None)
+        assert (datamart != None)
 
+        self.datamart = datamart
+        self.stdized_data = self.datamart.read_dataset()
+
+        """
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
 
@@ -41,6 +45,7 @@ class KMeans_alg:
         self.stdized_data.collect()
     
         self.log.info("Preprocessing finished")
+        """
 
 
     def cluster(self):
@@ -78,13 +83,14 @@ if __name__ == '__main__':
             .config("spark.executor.cores", config['spark']['executor_cores']) \
             .config("spark.driver.memory", config['spark']['driver_memory']) \
             .config("spark.executor.memory", config['spark']['executor_memory']) \
-            .config("spark.jars", config['spark']['postgresql_driver']) \
+            .config("spark.jars", f"{config['spark']['postgresql_driver']},datamart.jar") \
             .config('spark.eventLog.enabled','true') \
             .getOrCreate()
     
-    database = Database(spark=spark)
+    #database = Database(spark=spark)
+    datamart = Datamart(spark=spark, host=config['spark']['host'])
 
-    kmeans = KMeans_alg(database=database, external_spark=spark)
+    kmeans = KMeans_alg(datamart=datamart)
     kmeans.cluster()
 
     input("Press Enter to continue...")
