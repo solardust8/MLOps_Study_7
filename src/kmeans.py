@@ -25,10 +25,9 @@ class KMeans_alg:
         self.datamart = datamart
         self.stdized_data = self.datamart.read_dataset()
 
-        """
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
-
+        """
         
         self.spark = external_spark
         
@@ -48,7 +47,7 @@ class KMeans_alg:
         """
 
 
-    def cluster(self):
+    def cluster(self, mode='send'):
         self.log.info("Clustering started")
         evaluator = ClusteringEvaluator(
             predictionCol='prediction',
@@ -66,6 +65,9 @@ class KMeans_alg:
         self.log.info(f'k = {k}, silhouette score = {score}')
 
         self.log.info("Clustering finished")
+        predictions.show()
+        if mode == 'send':
+            self.datamart.write_predictions(predictions)
 
 
 if __name__ == '__main__':
@@ -83,18 +85,19 @@ if __name__ == '__main__':
             .config("spark.executor.cores", config['spark']['executor_cores']) \
             .config("spark.driver.memory", config['spark']['driver_memory']) \
             .config("spark.executor.memory", config['spark']['executor_memory']) \
-            .config("spark.jars", f"{config['spark']['postgresql_driver']},datamart.jar") \
+            .config("spark.jars", f"{config['spark']['postgresql_driver']}") \
             .config('spark.eventLog.enabled','true') \
             .getOrCreate()
     
-    #database = Database(spark=spark)
-    datamart = Datamart(spark=spark, host=config['spark']['host'])
+    # HOST,PORT,DB,USER,PASS,TABLENAME
+    args = [config['spark']['host'], '5432', 'mlops', 'solar', 'somepass', 'OpenFoodFacts']
+    datamart = Datamart(spark=spark, args=args)
 
     kmeans = KMeans_alg(datamart=datamart)
     kmeans.cluster()
 
     input("Press Enter to continue...")
 
-    kmeans.spark.sparkContext.stop()
-    kmeans.spark.stop()
+    spark.sparkContext.stop()
+    spark.stop()
     
