@@ -5,6 +5,7 @@ from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.sql import SparkSession
 #from preprocess import Preprocess
+sys.path.append(os.path.join(os.getcwd(), 'src'))
 from logger import Logger
 
 #from database import Database
@@ -47,7 +48,7 @@ class KMeans_alg:
         """
 
 
-    def cluster(self, mode='send'):
+    def cluster(self, k_value = 5, mode='send'):
         self.log.info("Clustering started")
         evaluator = ClusteringEvaluator(
             predictionCol='prediction',
@@ -57,7 +58,7 @@ class KMeans_alg:
         )
 
         
-        k=5
+        k= k_value
         kmeans = KMeans(featuresCol='stdized_features', k=k)
         model = kmeans.fit(self.stdized_data)
         predictions = model.transform(self.stdized_data)

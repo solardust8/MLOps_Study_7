@@ -2,3 +2,6 @@ configparser
 pyspark
 psutil
 numpy
+fastapi
+uvicorn
+python-dotenv

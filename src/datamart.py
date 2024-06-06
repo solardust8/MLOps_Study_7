@@ -1,8 +1,11 @@
 from pyspark.sql import DataFrame, SparkSession, SQLContext
 from pyspark.sql.types import StructField, IntegerType, StructType
 from pyspark.ml.linalg import VectorUDT
-from logger import Logger
+import sys
 import os
+sys.path.append(os.path.join(os.getcwd(), 'src'))
+from logger import Logger
+
 
 SHOW_LOG = True
 
@@ -25,7 +28,7 @@ class Datamart:
                 StructField("stdized_features", VectorUDT(), True),
         ])
 
-        os.system(f'spark-shell --jars postgresql-42.7.3.jar -i datamart\datamart.scala --conf spark.driver.args="{self.host},{self.port},{self.db},{self.user},{self.passw},{self.table},read"')
+        os.system(f'spark-shell --jars postgresql-42.7.3.jar -i {os.path.join("datamart", "datamart.scala")} --conf spark.driver.args="{self.host},{self.port},{self.db},{self.user},{self.passw},{self.table},read"')
         self.log.info("Datamart initialized with preprocessed json data saved to data/datamart")
 
 
@@ -35,4 +38,4 @@ class Datamart:
 
     def write_predictions(self, df: DataFrame):
         df.write.mode("overwrite").json('data/predictions')
-        os.system(f'spark-shell --jars postgresql-42.7.3.jar -i datamart\datamart.scala --conf spark.driver.args="{self.host},{self.port},{self.db},{self.user},{self.passw},Predictions,write"')
+        os.system(f'spark-shell --jars postgresql-42.7.3.jar -i {os.path.join("datamart", "datamart.scala")} --conf spark.driver.args="{self.host},{self.port},{self.db},{self.user},{self.passw},Predictions,write"')

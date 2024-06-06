@@ -21,5 +21,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /tmp/spark-events
 RUN mkdir -p /tmp/spark-history-server-logs
 
+#RUN bash /opt/spark/sbin/start-history-server.sh
+
+EXPOSE 4041
 EXPOSE 4040
 EXPOSE 18080
+EXPOSE 7890
+
+CMD bash /opt/spark/sbin/start-history-server.sh && uvicorn src.run:app --host 0.0.0.0 --port 7890 

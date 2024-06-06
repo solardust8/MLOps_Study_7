@@ -1,0 +1,1 @@
+curl -X GET 127.0.0.1:7890/cluster -H "Content-Type: application/json" -H "Accept: application/json" -d @query.json
