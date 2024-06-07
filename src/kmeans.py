@@ -93,7 +93,8 @@ if __name__ == '__main__':
     # HOST,PORT,DB,USER,PASS,TABLENAME
     user = os.getenv("USER")
     passw = os.getenv("PASSW")
-    args = [config['spark']['host'], '5432', 'mlops', user, passw, 'OpenFoodFacts']
+    db_url = os.getenv("DB_URL")
+    args = [db_url, '5432', 'mlops', user, passw, 'OpenFoodFacts']
     datamart = Datamart(spark=spark, args=args)
 
     kmeans = KMeans_alg(datamart=datamart)
